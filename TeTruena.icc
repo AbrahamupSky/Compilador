@@ -1,0 +1,67 @@
+entero x, w:=20;
+constante entero MAX:=30, N:=20;
+entero vector[MAX];
+decimal r, s:=4.55;
+constante palabra SALUDO:="Hola";
+palabra entrada:="", nombre;
+constante decimal PI:=3.141592;
+logico bandera, flag:=falso;
+constante logico VERDAD:=verdadero;
+
+entero FacRec(entero n)
+inicio
+   si n=0 o n=1 hacer
+    regresa n;
+   sino
+    regresa n*FacRec(n-1);
+fin;
+
+entero SumaImpar(entero m)
+inicio
+  suma:=0;
+  desde i:=1 hasta m incr 2
+     suma:=suma+i;
+  regresa suma;
+fin;
+
+sintipo OrdVec()
+inicio
+  entero num, tmp,i, j;
+  imprime("Dame elementos del Vector: ");
+  lee(num);
+  desde i:=1; hasta num
+  inicio
+     imprime("Vector[", i, "]:=");
+     lee(vector[i]);
+  fin;
+  //Ordena por Burbuja
+  desde i:=1 hasta num-1
+     desde j:=i+1 hasta num
+     si vector[i] > vector[j] hacer
+     incio
+      tmp:=vector[i];
+      vector[i]:=vector[j];
+      vector[j]:=tmp;
+     fin;
+  //Imprime Ordenado
+  imprimenl("*** El vector Ordenado Ascendente ***");
+  desde i:=1 hasta num
+     imprimenl("Vector[", i, "]:=", vector[i]);
+fin;
+
+sintipo principal()
+inicio
+   entero m;
+   imprime("Dame numero para obtener Factorial: ");
+   lee(m);
+   imprimenl("Factorial Recursivo de ", n, " es= ", FacRec(m));
+   imprime("Limite para sumar Impares: ");
+   lee(m);
+   imprimenl("Suma de impares hasta ", n, " es= ", SumaImpar(m));
+   OrdVec();
+   imprime("Como te llamas?: ");
+   lee(nombre);
+   imprimenl("Hola ", nombre, " YA Aprobaste!!!!");
+   imprimenl("Hasta Pronto...");
+fin;
+
