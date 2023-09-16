@@ -14,10 +14,9 @@ keywords = ['constante', 'entero', 'decimal', 'logico', 'palabra', 'sintipo',
 
 OPL = ['no', 'y', 'o']
 CTL = ['verdadero', 'falso']
-delim = ['.', ';', ':', '(', ')', '[', ']', '{', '}']
-special = ['!', '$', '#', '@', '?']
+delim = ['.', ',', ';', '(', ')', '[', ']']
+special = ['!', '$', '@', '#', '?']
 
-matrans = [
   #* col 0 = 'letra'
   #* col 1 = '_'
   #* col 2 = 'Digito'
@@ -32,6 +31,7 @@ matrans = [
   #* col 11 = "
   #* col 12 = special
 
+matrans = [
   [  1 ,  1 ,  2 ,  5 ,  6 ,  11,  10,  11,  12,  14,  15,  18, ERR ], #0
   [  1 ,  1 ,  1 , ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #1
   [ ACP, ACP,  2 , ACP, ACP,  3 , ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #2
@@ -83,19 +83,18 @@ def scanner():
   col = -1
 
   while idx < len(entrance) and status != ERR and status != ACP:
-    if entrance[idx] != '\n':
+    while status == 7 and entrance[idx] != '\n':
       idx += 1
       colm += 1
-      continue
-
+    
     if status != 0 and (entrance[idx] in delu or ord(entrance[idx]) == 32):
       statusA = status
-      status == ACP
+      status == 0
+    
     else:
-      print('Estado al entrar: ', status)
-      while status != 7 and idx < len(entrance) and status == 0 \
-      and (entrance[idx] in delu or ord(entrance[idx]) == 32): 
+      while idx < len(entrance) and status == 0 and (entrance[idx] in delu or ord(entrance[idx]) == 32):
         if entrance[idx] == '\n':
+          idx += 1
           rowg += 1
           colm = 1
         else:
@@ -106,14 +105,15 @@ def scanner():
 
     if status != ACP:
       c = entrance[idx]
-      print('c =', c)
 
       if c == '\n':
         rowg += 1
+        idx += 1
         colm = 1
       else:
         idx += 1
         colm += 1
+
       col = colCar( c )
 
     if c in delu and status != 18:
@@ -126,7 +126,6 @@ def scanner():
       if c in delu and status != 18: status = ACP
       status = matrans[status][col]
 
-      if status == 18: print(18, lexema)
       if status == ACP: break
       if status != ERR:
         lexema += c
@@ -135,17 +134,11 @@ def scanner():
 
     if status == 7 or status == 8 or status == 9: token = lexema = ''
 
-  print('Estado al salir: ', status)
-  if status == ERR or status == ACP: idx -= 1
-  else: statusA = status
-  print('Estado al entrar: ', statusA)
-
   if status == ERR or status == ACP: idx -= 1
   else: statusA = status
 
   if statusA == 1: 
     token = 'Ide'
-
     if lexema in keywords: token = 'Res'
     elif lexema in OPL: token = 'OpL'
     elif lexema in CTL: token = 'CtL'
@@ -156,14 +149,12 @@ def scanner():
   elif statusA == 11 or statusA == 12: token = 'Del'
   elif statusA == 13: token = 'OpS'
   elif statusA == 19: token = 'CtA'
-
-  print(token, '\t\t\t', lexema)
   return token, lexema
 
 #! Error Zone
 
 def error(tipe, desc, obj):
-  global rowg, colm
+  global rowg, colm, ERRA
   ERRA = True
   print('Linea:' + '['+ str(rowg) +']' + 'Columna:' + '[' + str(colm)+ '] Error de '+ tipe, desc, obj)
 
@@ -173,12 +164,13 @@ def estatutos(): pass
 
 def constvars(): pass
 
-def bloque():
+def block():
   global tok, lex
 
   if lex != 'inicio':
     error('Error de Sintaxis', 'se esperaba <inicio> y llego', lex)
   tok, lex = scanner()
+
   if lex != 'Fin':
     constvars()
   if lex != 'Fin':
@@ -198,7 +190,7 @@ def funcParcial():
   if lex != ')':
     error('Sintaxis', 'Se esperaba cerrar ) y llego ', lex)
   tok, lex = scanner()
-  bloque()
+  block()
 
   if lex != ';':
     error('Sintaxis', 'Se esperaba <;> y llego ', lex)
@@ -217,8 +209,8 @@ def prgm():
           lex != 'palabra' and lex != 'logico' and \
           lex != 'sintipo':
           error('Sintaxis',\
-                'Se esperaba <entero>, <decimal>, <logico>, <palabra> o <sintipo> y llego ',\
-              lex)
+                'Se esperaba <entero>, <decimal>, <logico>, <palabra> o <sintipo> y llego ', lex)
+
       else: 
         tok, lex = scanner()
         if tok == 'Ide': idf = lex
@@ -231,16 +223,16 @@ def prgm():
         else: 
           constvars()
 
-#** Main Zone
+#* Main Zone
 if __name__ == '__main__':
   archE = ''
 
   print(archE[len(archE)-3:])
+
   while (archE[len(archE)-3:] != '.icc'):
     archE = input('File to compile (*.icc) [. = Exit]: ') # icc = Ingeniero en Ciencias Computacionales
 
-    if archE == '.':
-      exit(0)
+    if archE == '.': exit(0)
 
     try:
       inputF = open(archE, 'r+')
@@ -252,14 +244,16 @@ if __name__ == '__main__':
   if inputF != None:
     while line := inputF.readline():
       entrance += line
-
-  else:
-    print('No existe el archivo: ', archE)
-    exit(1)
+    inputF.close()
 
   print('\n\n' + entrance, '\n\n')
 
   tok = lex = ''
+  while (idx < len(entrance)):
+    tok, lex = scanner()
+    print(tok, lex)
+
+  exit(0)
   prgm()
   if NOPRINC:
     error('Error de Semantica', 'NO declaro la funcion <principal>', '')

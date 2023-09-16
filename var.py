@@ -6,6 +6,7 @@ ERRA = False
 NOPRINC = True
 reng = 1
 colm = 1
+esp = ['!', '$', '@', '#', '?']
 opas = ['+', '-', '^', '%']
 delu = ['\n', '\t', chr(32)]
 keyword = ['constante', 'entero', 'decimal', 'logico', 'palabra', 'sintipo', 
@@ -15,7 +16,6 @@ keyword = ['constante', 'entero', 'decimal', 'logico', 'palabra', 'sintipo',
 opl = ['no', 'y', 'o']
 ctl = ['verdadero', 'falso']
 delim = ['.', ',', ';', '(', ')', '[', ']']
-esp = ['!', '$', '@', '#', '?']
 
 matran= [
     #let    _   dig Opa /   .       *   Del  :   =   <   "  esp
@@ -57,8 +57,8 @@ def colCar(x):
     if x == '"'   : return 11
     if x in esp   : return 12
     if not(x in delu):
-       print('Simbolo NO valido en el Lenguaje', x)
-       return ERR
+        print('Simbolo NO valido en el Lenguaje', x)
+        return ERR
 
 def scanner():
     global entrada, matran, ERR, ACP, idx, colm, reng
@@ -67,32 +67,33 @@ def scanner():
     estado = 0
     estA = 0
     col = -1
+
     while idx < len(entrada) and estado != ERR and estado != ACP:
-        while estado == 7 and entrada[idx] !='\n':
+        while estado == 7 and entrada[idx] != '\n':
             idx += 1
             colm += 1
-        if estado != 0 and (entrada[idx] in delu 
-              or ord(entrada[idx]) == 32):
-              estA = estado
-              estado == 0
+        if estado != 0 and (entrada[idx] in delu or ord(entrada[idx]) == 32):
+            estA = estado
+            estado == 0
         else:
             while idx < len(entrada) and estado == 0 \
-                  and (entrada[idx] in delu or ord(entrada[idx]) == 32): 
-                  if entrada[idx] == '\n':
-                     idx += 1
-                     reng += 1
-                     colm = 1
-                  else:
-                    idx += 1
-                    colm += 1
+                    and (entrada[idx] in delu or ord(entrada[idx]) == 32): 
+                    if entrada[idx] == '\n':
+                        idx += 1
+                        reng += 1
+                        colm = 1
+                    else:
+                        idx += 1
+                        colm += 1
 
         if idx >= len(entrada): break
+        
         if estado != ACP:
             c = entrada[idx]
             if c == '\n': 
-              reng += 1
-              idx +=1
-              colm = 1
+                reng += 1
+                idx +=1
+                colm = 1
             else:
                 idx += 1
                 colm += 1
@@ -123,6 +124,7 @@ def scanner():
         if lexema in keyword: token = 'Res'
         elif lexema in opl  : token = 'OpL'
         elif lexema in ctl  : token = 'CtL'  
+
     elif estA == 2: token = 'Ent'
     elif estA == 4: token = 'Dec'
     elif estA in [5, 6, 10]: token = 'OpA'
