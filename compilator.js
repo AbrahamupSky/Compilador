@@ -48,6 +48,9 @@ var colm = 1;
 var NOPRINC = true;
 var archE = '';
 var inputF = null;
+var lex = ''; // Added declaration
+var tok = ''; // Added declaration
+var idf = ''; // Added declaration
 var ERR = -1;
 var ACP = 99;
 var OPAS = ['+', '-', '*', '%', '^'];
@@ -331,99 +334,103 @@ function prgm() {
     }
 }
 //* -------------- Main Zone --------------
-console.log(archE.slice(-4));
 var rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
 });
-(function () { return __awaiter(void 0, void 0, void 0, function () {
-    var inputF_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                if (!(archE.slice(-4) !== '.icc')) return [3 /*break*/, 2];
-                return [4 /*yield*/, getInput('File to compile (*.icc) [. = Exit]: ')];
-            case 1:
-                archE = _a.sent();
-                if (archE === '.') {
-                    exit(0);
-                }
-                try {
-                    inputF_1 = fs.readFileSync(archE, 'utf8');
-                    compile(inputF_1);
-                }
-                catch (error) {
-                    console.log("No existe el archivo: ".concat(archE));
-                }
-                return [3 /*break*/, 0];
-            case 2: return [2 /*return*/];
-        }
-    });
-}); })();
 function compile(entrance) {
-    var _a;
-    var tok = '';
-    var lex = '';
-    var idx = 0;
-    while (idx < entrance.length) {
-        _a = scanner(), tok = _a[0], lex = _a[1];
-        console.log(tok, lex);
-    }
-    prgm();
-    if (NOPRINC) {
-        error('Error de Semántica', 'NO declaró la función <principal>', '');
-    }
-    if (!ERRA) {
-        console.log('Compilado con éxito');
-    }
-}
-function getInput(prompt) {
-    return new Promise(function (resolve) {
-        rl.question(prompt, function (answer) {
-            resolve(answer);
+    return __awaiter(this, void 0, void 0, function () {
+        function getInput(prompt) {
+            return new Promise(function (resolve) {
+                rl.question(prompt, function (answer) {
+                    resolve(answer);
+                });
+            });
+        }
+        var tok, lex, idx, lineIdx, inputF_1;
+        var _a;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    tok = '';
+                    lex = '';
+                    idx = 0;
+                    lineIdx = 0;
+                    while (idx < entrance.length) {
+                        _a = scanner(), tok = _a[0], lex = _a[1];
+                        console.log(tok, lex);
+                        // Manejar los saltos de línea
+                        if (entrance[idx] === '\n') {
+                            lineIdx++;
+                            colm = 1; // Reiniciar el contador de columnas
+                        }
+                        else {
+                            colm++; // Incrementar el contador de columnas
+                        }
+                        idx++;
+                    }
+                    prgm();
+                    if (NOPRINC) {
+                        error('Error de Semántica', 'NO declaró la función <principal>', '');
+                    }
+                    if (!ERRA) {
+                        console.log('Compilado con éxito');
+                    }
+                    return [4 /*yield*/, getInput('File to compile (*.icc) [. = Exit]: ')];
+                case 1:
+                    // Actualizar archE para que el bucle principal funcione correctamente
+                    archE = _b.sent();
+                    if (archE === '.') {
+                        process.exit(0);
+                    }
+                    try {
+                        inputF_1 = fs.readFileSync(archE, 'utf8');
+                        compile(inputF_1);
+                    }
+                    catch (error) {
+                        console.log("No existe el archivo: ".concat(archE));
+                    }
+                    return [2 /*return*/];
+            }
         });
     });
 }
-function exit(exitCode) {
-    process.exit(exitCode);
-}
-// console.log(archE.slice(-3));
+//! This already works, but enters in an infinite loop
+// console.log(archE.slice(-4));
 // const rl = readline.createInterface({
 //   input: process.stdin,
 //   output: process.stdout,
 // });
 // (async () => {
-//   while (archE.slice(-3) !== '.icc') {
+//   while (archE.slice(-4) !== '.icc') {
 //     archE = await getInput('File to compile (*.icc) [. = Exit]: ');
 //     if (archE === '.') {
-//       process.exit(0);
+//       exit(0);
 //     }
 //     try {
-//       inputF = fs.readFileSync(archE, 'utf8');
-//       break; // Exit the loop after successfully reading the file
+//       const inputF = fs.readFileSync(archE, 'utf8');
+//       compile(inputF);
 //     } catch (error) {
 //       console.log(`No existe el archivo: ${archE}`);
 //     }
 //   }
-//   if (inputF !== null) {
-//     let entrance: string = inputF;
-//     console.log('\n\n' + entrance, '\n\n');
-//     let tok: string = '';
-//     let lex: string = '';
-//     let idx: number = 0;
-//     while (idx < entrance.length) {
-//       [tok, lex] = scanner();
-//       console.log(tok, lex);
-//     }
-//     prgm();
-//     if (NOPRINC) {
-//       error('Error de Semantica', 'NO declaro la funcion <principal>', '');
-//     }
-//     if (!ERRA) {
-//       console.log('Compilado con éxito');
-//     }
-//   }
 // })();
+// function compile(entrance: string): void {
+//   let tok: string = '';
+//   let lex: string = '';
+//   let idx: number = 0;
+//   while (idx < entrance.length) {
+//     [tok, lex] = scanner();
+//     console.log(tok, lex);
+//   }
+//   prgm();
+//   if (NOPRINC) {
+//     error('Error de Semántica', 'NO declaró la función <principal>', '');
+//   }
+//   if (!ERRA) {
+//     console.log('Compilado con éxito');
+//   }
+// }
 // function getInput(prompt: string): Promise<string> {
 //   return new Promise<string>((resolve) => {
 //     rl.question(prompt, (answer) => {

@@ -1,20 +1,23 @@
-import * as fs from "fs"
-import * as readline from 'readline'
+import * as fs from "fs";
+import * as readline from 'readline';
 
 //! Global variables
-let entrance: string = ''
-let idx: number = 0
-let ERRA: boolean = false
-let rowg: number = 1
-let colm: number = 1
-let NOPRINC: boolean = true
-let archE: string = ''
-let inputF: any = null
+let entrance: string = '';
+let idx: number = 0;
+let ERRA: boolean = false;
+let rowg: number = 1;
+let colm: number = 1;
+let NOPRINC: boolean = true;
+let archE: string = '';
+let inputF: any = null;
+let lex: string = ''; // Added declaration
+let tok: string = ''; // Added declaration
+let idf: string = ''; // Added declaration
 
-const ERR: number = -1
-const ACP: number = 99
-const OPAS: string[] = ['+', '-', '*', '%', '^']
-const delu: string[] = ['\n', '\t', ' ', String.fromCharCode(32)]
+const ERR: number = -1;
+const ACP: number = 99;
+const OPAS: string[] = ['+', '-', '*', '%', '^'];
+const delu: string[] = ['\n', '\t', ' ', String.fromCharCode(32)];
 const keywords: string[] = [
   "constante",
   "entero",
@@ -37,15 +40,11 @@ const keywords: string[] = [
   "lee",
   "interrumpe",
   "continua"
-]
-const OPL: string[] = ["no", "y", "o"]
-const CTL: string[] = ["verdadero", "falso"]
-const delim: string[] = [".", ",", ";", "(", ")", "[", "]", ""]
-const special: string[] = ["!", "$", "@", "#", "?"]
-
-declare let lex: string
-declare let tok: string
-declare let idf: string
+];
+const OPL: string[] = ["no", "y", "o"];
+const CTL: string[] = ["verdadero", "falso"];
+const delim: string[] = [".", ",", ";", "(", ")", "[", "]", ""];
+const special: string[] = ["!", "$", "@", "#", "?"];
 
 const matrans: number[][] = [
   // *col 0 = 'letra'
@@ -82,7 +81,7 @@ const matrans: number[][] = [
   [ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], //17
   [ 18,  18,  18,  18,  18,  18,  18,  18,  18,  18,  18,  19,  18 ], //18
   [ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], //19
-]
+];
 
 //? Column Caracter
 
@@ -105,7 +104,7 @@ function colCar(x: string): number {
     console.log(`${x} is not a char or illegal symbol`)
     return ERR
   }
-  
+
   return ERR
 }
 
@@ -146,8 +145,8 @@ export function scanner(): [string, string] {
 
     if (idx >= entrance.length) break
 
-    if (status !== ACP) { 
-      const c: string = entrance[idx] 
+    if (status !== ACP) {
+      const c: string = entrance[idx]
 
       if (c === '\n') {
         rowg += 1
@@ -194,7 +193,7 @@ export function scanner(): [string, string] {
     if (keywords.includes(lexema)) token = 'Res'
     else if (OPL.includes(lexema)) token = 'OpL'
     else if (CTL.includes(lexema)) token = 'CtL'
-  } 
+  }
   else if (statusA === 2) token = 'Ent'
   else if (statusA === 4) token = 'Dec'
   else if (statusA in [5, 6, 10]) token = 'OpA'
@@ -311,38 +310,30 @@ function prgm(): void {
 
 //* -------------- Main Zone --------------
 
-console.log(archE.slice(-4));
-
 const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+    input: process.stdin,
+    output: process.stdout,
+  });
 
-(async () => {
-  while (archE.slice(-4) !== '.icc') {
-    archE = await getInput('File to compile (*.icc) [. = Exit]: ');
-
-    if (archE === '.') {
-      exit(0);
-    }
-
-    try {
-      const inputF = fs.readFileSync(archE, 'utf8');
-      compile(inputF);
-    } catch (error) {
-      console.log(`No existe el archivo: ${archE}`);
-    }
-  }
-})();
-
-function compile(entrance: string): void {
+async function compile(entrance: string): Promise<void> {
   let tok: string = '';
   let lex: string = '';
   let idx: number = 0;
+  let lineIdx: number = 0;
 
   while (idx < entrance.length) {
     [tok, lex] = scanner();
     console.log(tok, lex);
+
+    // Manejar los saltos de línea
+    if (entrance[idx] === '\n') {
+      lineIdx++;
+      colm = 1; // Reiniciar el contador de columnas
+    } else {
+      colm++; // Incrementar el contador de columnas
+    }
+
+    idx++;
   }
 
   prgm();
@@ -354,21 +345,35 @@ function compile(entrance: string): void {
   if (!ERRA) {
     console.log('Compilado con éxito');
   }
-}
 
-function getInput(prompt: string): Promise<string> {
-  return new Promise<string>((resolve) => {
-    rl.question(prompt, (answer) => {
-      resolve(answer);
+  function getInput(prompt: string): Promise<string> {
+    return new Promise<string>((resolve) => {
+      rl.question(prompt, (answer) => {
+        resolve(answer);
+      });
     });
-  });
+  }
+  
+
+  // Actualizar archE para que el bucle principal funcione correctamente
+  archE = await getInput('File to compile (*.icc) [. = Exit]: ');
+
+  if (archE === '.') {
+    process.exit(0);
+  }
+
+  try {
+    const inputF = fs.readFileSync(archE, 'utf8');
+    compile(inputF);
+  } catch (error) {
+    console.log(`No existe el archivo: ${archE}`);
+  }
 }
 
-function exit(exitCode: number): void {
-  process.exit(exitCode);
-}
 
-// console.log(archE.slice(-3));
+
+//! This already works, but enters in an infinite loop
+// console.log(archE.slice(-4));
 
 // const rl = readline.createInterface({
 //   input: process.stdin,
@@ -376,46 +381,42 @@ function exit(exitCode: number): void {
 // });
 
 // (async () => {
-//   while (archE.slice(-3) !== '.icc') {
+//   while (archE.slice(-4) !== '.icc') {
 //     archE = await getInput('File to compile (*.icc) [. = Exit]: ');
 
 //     if (archE === '.') {
-//       process.exit(0);
+//       exit(0);
 //     }
 
 //     try {
-//       inputF = fs.readFileSync(archE, 'utf8');
-//       break; // Exit the loop after successfully reading the file
+//       const inputF = fs.readFileSync(archE, 'utf8');
+//       compile(inputF);
 //     } catch (error) {
 //       console.log(`No existe el archivo: ${archE}`);
 //     }
 //   }
-
-//   if (inputF !== null) {
-//     let entrance: string = inputF;
-
-//     console.log('\n\n' + entrance, '\n\n');
-
-//     let tok: string = '';
-//     let lex: string = '';
-//     let idx: number = 0;
-
-//     while (idx < entrance.length) {
-//       [tok, lex] = scanner();
-//       console.log(tok, lex);
-//     }
-
-//     prgm();
-
-//     if (NOPRINC) {
-//       error('Error de Semantica', 'NO declaro la funcion <principal>', '');
-//     }
-
-//     if (!ERRA) {
-//       console.log('Compilado con éxito');
-//     }
-//   }
 // })();
+
+// function compile(entrance: string): void {
+//   let tok: string = '';
+//   let lex: string = '';
+//   let idx: number = 0;
+
+//   while (idx < entrance.length) {
+//     [tok, lex] = scanner();
+//     console.log(tok, lex);
+//   }
+
+//   prgm();
+
+//   if (NOPRINC) {
+//     error('Error de Semántica', 'NO declaró la función <principal>', '');
+//   }
+
+//   if (!ERRA) {
+//     console.log('Compilado con éxito');
+//   }
+// }
 
 // function getInput(prompt: string): Promise<string> {
 //   return new Promise<string>((resolve) => {
