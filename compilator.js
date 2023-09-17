@@ -36,16 +36,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.scanner = void 0;
 var fs = require("fs");
+var readline = require("readline");
 //! Global variables
 var entrance = '';
-var ERR = -1;
-var ACP = 99;
 var idx = 0;
 var ERRA = false;
-var NOPRINC = true;
 var rowg = 1;
 var colm = 1;
+var NOPRINC = true;
+var archE = '';
+var inputF = null;
+var ERR = -1;
+var ACP = 99;
 var OPAS = ['+', '-', '*', '%', '^'];
 var delu = ['\n', '\t', ' ', String.fromCharCode(32)];
 var keywords = [
@@ -112,34 +116,34 @@ var matrans = [
 ];
 //? Column Caracter
 function colCar(x) {
-    if (x.match(/[a-zA-Z]/) || delu.includes(x))
+    if (/^[a-zA-Z]$/.test(x) || delu.includes(x))
         return 0;
-    if (x === '_')
+    else if (x === '_')
         return 1;
-    if (x.match(/\d/))
+    else if (x.match(/\d/))
         return 2;
-    if (OPAS.includes(x))
+    else if (OPAS.includes(x))
         return 3;
-    if (x === '/')
+    else if (x === '/')
         return 4;
-    if (x === '.')
+    else if (x === '.')
         return 5;
-    if (x === '*')
+    else if (x === '*')
         return 6;
-    if (delim.includes(x))
+    else if (delim.includes(x))
         return 7;
-    if (x === ':')
+    else if (x === ':')
         return 8;
-    if (x === '=')
+    else if (x === '=')
         return 9;
-    if (['<'].includes(x))
+    else if (['<'].includes(x))
         return 10;
-    if (['"'].includes(x))
+    else if (['"'].includes(x))
         return 11;
-    if (special.includes(x))
+    else if (special.includes(x))
         return 12;
     if (!delu.includes(x)) {
-        console.log(x, 'is not a char or illegal symbol');
+        console.log("".concat(x, " is not a char or illegal symbol"));
         return ERR;
     }
     return ERR;
@@ -153,81 +157,86 @@ function scanner() {
     var col = -1;
     while (idx < entrance.length && status !== ERR && status !== ACP) {
         while (status === 7 && entrance[idx] !== '\n') {
-            idx++;
-            colm++;
+            idx += 1;
+            colm += 1;
         }
         if (status !== 0 && (delu.includes(entrance[idx]) || entrance.charCodeAt(idx) === 32)) {
             statusA = status;
             status = 0;
         }
         else {
-            while (idx < entrance.length && status === 0 && (delu.includes(entrance[idx]) || entrance.charCodeAt(idx) === 32)) {
+            while (idx < entrance.length &&
+                status === 0 &&
+                (delu.includes(entrance[idx]) || entrance[idx].charCodeAt(idx) === 32)) {
                 if (entrance[idx] === '\n') {
-                    idx++;
-                    rowg++;
+                    idx += 1;
+                    rowg += 1;
                     colm = 1;
                 }
                 else {
-                    idx++;
-                    colm++;
+                    idx += 1;
+                    colm += 1;
                 }
             }
         }
         if (idx >= entrance.length)
             break;
         if (status !== ACP) {
-            var c = entrance[idx];
-            if (c === '\n') {
-                rowg++;
-                idx++;
+            var c_1 = entrance[idx];
+            if (c_1 === '\n') {
+                rowg += 1;
+                idx += 1;
                 colm = 1;
             }
             else {
-                idx++;
-                colm++;
+                idx += 1;
+                colm += 1;
             }
-            col = colCar(c);
+            col = colCar(c_1);
         }
+        var c = void 0;
         if (delu.includes(entrance[idx]) && status !== 18) {
             statusA = status;
             status = ACP;
         }
         if (col >= 0 && col <= 12 && status !== ACP && status !== ERR) {
             statusA = status;
-            if (delu.includes(entrance[idx]) && status !== 18)
+            c = entrance[idx];
+            if (delu.includes(c) && status !== 18)
                 status = ACP;
             status = matrans[status][col];
             if (status === ACP)
                 break;
             if (status !== ERR)
-                lexema += entrance[idx];
+                lexema += c;
         }
-        else
+        else {
             status = ERR;
+        }
         if (status === 7 || status === 8 || status === 9) {
             token = lexema = '';
         }
     }
     if (status === ERR || status === ACP)
-        idx--;
+        idx -= 1;
     else
         statusA = status;
-    if (statusA === 1) {
+    if (status === 1) {
         token = 'Ide';
         if (keywords.includes(lexema))
             token = 'Res';
         else if (OPL.includes(lexema))
             token = 'OpL';
         else if (CTL.includes(lexema))
-            token = 'Ctl';
+            token = 'CtL';
     }
     else if (statusA === 2)
         token = 'Ent';
     else if (statusA === 4)
         token = 'Dec';
-    else if ([5, 6, 10].includes(statusA))
+    else if (statusA in [5, 6, 10])
         token = 'OpA';
-    else if (statusA === 11 || statusA === 12)
+    else if (statusA in [11, 12])
         token = 'Del';
     else if (statusA === 13)
         token = 'OpS';
@@ -235,18 +244,19 @@ function scanner() {
         token = 'CtA';
     return [token, lexema];
 }
+exports.scanner = scanner;
 //! -------------- Error zone --------------
 function error(tipe, desc, obj) {
     ERRA = true;
-    console.log("Linea: ".concat(rowg, " Columna: ").concat(colm, ". Error de ").concat(tipe), desc, obj);
+    console.log("Linea: ".concat(rowg, "[").concat(colm, "]. Error de ").concat(tipe), desc, obj);
 }
+//* -------------- To use --------------
 function params() { }
 function statutes() { }
 function constvars() { }
+//* -------------- To use --------------
 function block() {
     var _a, _b;
-    var lex = '';
-    var tok = '';
     if (lex !== 'inicio') {
         error('Error de Sintaxis', 'se esperaba <inicio> y llego', lex);
     }
@@ -264,9 +274,6 @@ function block() {
 }
 function funcParcial() {
     var _a, _b, _c;
-    var lex;
-    var tok;
-    var idf = '';
     if (idf === 'principal') {
         NOPRINC = false;
     }
@@ -286,16 +293,14 @@ function funcParcial() {
 }
 function prgm() {
     var _a, _b, _c;
-    var lex;
-    var tok;
-    var idf;
     _a = scanner(), tok = _a[0], lex = _a[1];
     while (lex === 'constante' ||
         lex === 'entero' ||
         lex === 'decimal' ||
         lex === 'palabra' ||
         lex === 'logico' ||
-        (lex === 'sintipo' && idx < entrance.length)) {
+        lex === 'sintipo' ||
+        lex === 'principal' && NOPRINC) {
         if (lex === 'constante') {
             constvars();
         }
@@ -309,7 +314,12 @@ function prgm() {
             }
             else {
                 _b = scanner(), tok = _b[0], lex = _b[1];
-                idf = lex, _c = scanner(), tok = _c[0], lex = _c[1];
+                if (tok === 'Ide')
+                    idf = lex;
+                else {
+                    error('Sintaxis', 'Se esperaba <Ide> y llegó ', tok);
+                }
+                _c = scanner(), tok = _c[0], lex = _c[1];
                 if (lex === '(') {
                     funcParcial();
                 }
@@ -321,58 +331,106 @@ function prgm() {
     }
 }
 //* -------------- Main Zone --------------
-function main() {
-    return __awaiter(this, void 0, void 0, function () {
-        var line, tok, lex, archE, inputF;
-        var _a;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0: return [4 /*yield*/, input("File to compile (*.icc) [. = Exit]: ")];
-                case 1:
-                    archE = _b.sent();
-                    // Exit if the user enters "."
-                    if (archE === ".") {
-                        process.exit(0);
-                    }
-                    // Check if the file exists
-                    if (!fs.existsSync(archE)) {
-                        console.log("No existe el archivo: ", archE);
-                        return [2 /*return*/];
-                    }
-                    inputF = readFileSync(archE, "r+");
-                    // Iterate over the lines of the file and add them to the entrance string
-                    while (function (, line) {
-                        if (line === void 0) { line = inputF.readline(); }
-                        return ;
-                    })
-                         !== null;
-                    {
-                        entrance += line;
-                    }
-                    // Close the file
-                    inputF.close();
-                    // Print the entrance string
-                    console.log("\n\n" + entrance, "\n\n");
-                    // Scan the entrance string for tokens and lexemes
-                    while (idx < entrance.length) {
-                        tok = lex = "";
-                        _a = scanner(), tok = _a[0], lex = _a[1];
-                        console.log(tok, lex);
-                    }
-                    // Call the prgm() function to compile the program
-                    prgm();
-                    // Check if the principal function was not declared
-                    if (NOPRINC) {
-                        error("Error de Semantica", "NO declaro la funcion <principal>", "");
-                    }
-                    // If there were no errors, print a success message
-                    if (!ERRA) {
-                        console.log("Compilado con exito");
-                    }
-                    return [2 /*return*/];
-            }
+console.log(archE.slice(-4));
+var rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+});
+(function () { return __awaiter(void 0, void 0, void 0, function () {
+    var inputF_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!(archE.slice(-4) !== '.icc')) return [3 /*break*/, 2];
+                return [4 /*yield*/, getInput('File to compile (*.icc) [. = Exit]: ')];
+            case 1:
+                archE = _a.sent();
+                if (archE === '.') {
+                    exit(0);
+                }
+                try {
+                    inputF_1 = fs.readFileSync(archE, 'utf8');
+                    compile(inputF_1);
+                }
+                catch (error) {
+                    console.log("No existe el archivo: ".concat(archE));
+                }
+                return [3 /*break*/, 0];
+            case 2: return [2 /*return*/];
+        }
+    });
+}); })();
+function compile(entrance) {
+    var _a;
+    var tok = '';
+    var lex = '';
+    var idx = 0;
+    while (idx < entrance.length) {
+        _a = scanner(), tok = _a[0], lex = _a[1];
+        console.log(tok, lex);
+    }
+    prgm();
+    if (NOPRINC) {
+        error('Error de Semántica', 'NO declaró la función <principal>', '');
+    }
+    if (!ERRA) {
+        console.log('Compilado con éxito');
+    }
+}
+function getInput(prompt) {
+    return new Promise(function (resolve) {
+        rl.question(prompt, function (answer) {
+            resolve(answer);
         });
     });
 }
-// Start the main function
-main();
+function exit(exitCode) {
+    process.exit(exitCode);
+}
+// console.log(archE.slice(-3));
+// const rl = readline.createInterface({
+//   input: process.stdin,
+//   output: process.stdout,
+// });
+// (async () => {
+//   while (archE.slice(-3) !== '.icc') {
+//     archE = await getInput('File to compile (*.icc) [. = Exit]: ');
+//     if (archE === '.') {
+//       process.exit(0);
+//     }
+//     try {
+//       inputF = fs.readFileSync(archE, 'utf8');
+//       break; // Exit the loop after successfully reading the file
+//     } catch (error) {
+//       console.log(`No existe el archivo: ${archE}`);
+//     }
+//   }
+//   if (inputF !== null) {
+//     let entrance: string = inputF;
+//     console.log('\n\n' + entrance, '\n\n');
+//     let tok: string = '';
+//     let lex: string = '';
+//     let idx: number = 0;
+//     while (idx < entrance.length) {
+//       [tok, lex] = scanner();
+//       console.log(tok, lex);
+//     }
+//     prgm();
+//     if (NOPRINC) {
+//       error('Error de Semantica', 'NO declaro la funcion <principal>', '');
+//     }
+//     if (!ERRA) {
+//       console.log('Compilado con éxito');
+//     }
+//   }
+// })();
+// function getInput(prompt: string): Promise<string> {
+//   return new Promise<string>((resolve) => {
+//     rl.question(prompt, (answer) => {
+//       resolve(answer);
+//     });
+//   });
+// }
+// function exit(exitCode: number): void {
+//   process.exit(exitCode);
+// }

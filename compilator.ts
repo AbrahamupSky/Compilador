@@ -3,16 +3,19 @@ import * as readline from 'readline'
 
 //! Global variables
 let entrance: string = ''
-let ERR: number = -1
-let ACP: number = 99
 let idx: number = 0
 let ERRA: boolean = false
-let NOPRINC: boolean = true
 let rowg: number = 1
 let colm: number = 1
-let OPAS: string[] = ['+', '-', '*', '%', '^']
-let delu: string[] = ['\n', '\t', ' ', String.fromCharCode(32)]
-let keywords: string[] = [
+let NOPRINC: boolean = true
+let archE: string = ''
+let inputF: any = null
+
+const ERR: number = -1
+const ACP: number = 99
+const OPAS: string[] = ['+', '-', '*', '%', '^']
+const delu: string[] = ['\n', '\t', ' ', String.fromCharCode(32)]
+const keywords: string[] = [
   "constante",
   "entero",
   "decimal",
@@ -35,10 +38,14 @@ let keywords: string[] = [
   "interrumpe",
   "continua"
 ]
-let OPL: string[] = ["no", "y", "o"]
-let CTL: string[] = ["verdadero", "falso"]
-let delim: string[] = [".", ",", ";", "(", ")", "[", "]", ""]
-let special: string[] = ["!", "$", "@", "#", "?"]
+const OPL: string[] = ["no", "y", "o"]
+const CTL: string[] = ["verdadero", "falso"]
+const delim: string[] = [".", ",", ";", "(", ")", "[", "]", ""]
+const special: string[] = ["!", "$", "@", "#", "?"]
+
+declare let lex: string
+declare let tok: string
+declare let idf: string
 
 const matrans: number[][] = [
   // *col 0 = 'letra'
@@ -80,22 +87,22 @@ const matrans: number[][] = [
 //? Column Caracter
 
 function colCar(x: string): number {
-  if (x.match(/[a-zA-Z]/) || delu.includes(x)) return 0
-  if (x === '_')            return 1
-  if (x.match(/\d/))        return 2
-  if (OPAS.includes(x))     return 3
-  if (x === '/')            return 4
-  if (x === '.')            return 5
-  if (x === '*')            return 6
-  if (delim.includes(x))    return 7
-  if (x === ':')            return 8
-  if (x === '=')            return 9
-  if (['<'].includes(x))    return 10
-  if (['"'].includes(x))    return 11
-  if (special.includes(x))  return 12
+  if (/^[a-zA-Z]$/.test(x) || delu.includes(x)) return 0
+  else if (x === '_')            return 1
+  else if (x.match(/\d/))        return 2
+  else if (OPAS.includes(x))     return 3
+  else if (x === '/')            return 4
+  else if (x === '.')            return 5
+  else if (x === '*')            return 6
+  else if (delim.includes(x))    return 7
+  else if (x === ':')            return 8
+  else if (x === '=')            return 9
+  else if (['<'].includes(x))    return 10
+  else if (['"'].includes(x))    return 11
+  else if (special.includes(x))  return 12
 
   if (!delu.includes(x)) {
-    console.log(x, 'is not a char or illegal symbol')
+    console.log(`${x} is not a char or illegal symbol`)
     return ERR
   }
   
@@ -104,7 +111,7 @@ function colCar(x: string): number {
 
 //? -------------- Scanner --------------
 
-function scanner(): [string, string] {
+export function scanner(): [string, string] {
   let lexema: string = ''
   let token: string = ''
   let status: number = 0
@@ -113,42 +120,47 @@ function scanner(): [string, string] {
 
   while (idx < entrance.length && status !== ERR && status !== ACP) {
     while (status === 7 && entrance[idx] !== '\n') {
-      idx++
-      colm++
+      idx += 1
+      colm += 1
     }
 
     if (status !== 0 && (delu.includes(entrance[idx]) || entrance.charCodeAt(idx) === 32)) {
       statusA = status
       status = 0
     } else {
-      while (idx < entrance.length && status === 0 && (delu.includes(entrance[idx]) || entrance.charCodeAt(idx) === 32)) {
+      while (
+        idx < entrance.length &&
+        status === 0 &&
+        (delu.includes(entrance[idx]) || entrance[idx].charCodeAt(idx) === 32)
+      ) {
         if (entrance[idx] === '\n') {
-          idx++
-          rowg++
+          idx += 1
+          rowg += 1
           colm = 1
         } else {
-          idx++
-          colm++
+          idx += 1
+          colm += 1
         }
       }
     }
 
     if (idx >= entrance.length) break
 
-    if (status !== ACP) {
-      const c: string = entrance[idx]
+    if (status !== ACP) { 
+      const c: string = entrance[idx] 
 
       if (c === '\n') {
-        rowg++
-        idx++
+        rowg += 1
+        idx += 1
         colm = 1
       } else {
-        idx++
-        colm++
+        idx += 1
+        colm += 1
       }
 
       col = colCar(c)
     }
+    let c: string
 
     if (delu.includes(entrance[idx]) && status !== 18) {
       statusA = status
@@ -158,51 +170,57 @@ function scanner(): [string, string] {
     if (col >= 0 && col <= 12 && status !== ACP && status !== ERR) {
       statusA = status
 
-      if (delu.includes(entrance[idx]) && status !== 18) status = ACP
+      c = entrance[idx]
+      if (delu.includes(c) && status !== 18) status = ACP
       status = matrans[status][col]
 
       if (status === ACP) break
-      if (status !== ERR) lexema += entrance[idx]
-    } else status = ERR
+      if (status !== ERR) lexema += c
+    } else {
+      status = ERR
+    }
 
     if (status === 7 || status === 8 || status === 9) {
       token = lexema = ''
     }
   }
 
-  if (status === ERR || status === ACP) idx--
+  if (status === ERR || status === ACP) idx -= 1
   else statusA = status
 
-  if (statusA === 1) {
+  if (status === 1) {
     token = 'Ide'
 
     if (keywords.includes(lexema)) token = 'Res'
     else if (OPL.includes(lexema)) token = 'OpL'
-    else if (CTL.includes(lexema)) token = 'Ctl'
-  } else if (statusA === 2) token = 'Ent'
+    else if (CTL.includes(lexema)) token = 'CtL'
+  } 
+  else if (statusA === 2) token = 'Ent'
   else if (statusA === 4) token = 'Dec'
-  else if ([5, 6, 10].includes(statusA)) token = 'OpA'
-  else if (statusA === 11 || statusA === 12) token = 'Del'
+  else if (statusA in [5, 6, 10]) token = 'OpA'
+  else if (statusA in [11, 12]) token = 'Del'
   else if (statusA === 13) token = 'OpS'
   else if (statusA === 19) token = 'CtA'
-  
+
   return [token, lexema]
 }
+
 //! -------------- Error zone --------------
 
 function error(tipe: string, desc: string, obj: any): void {
   ERRA = true
-  console.log(`Linea: ${rowg} Columna: ${colm}. Error de ${tipe}`, desc, obj)
+  console.log(`Linea: ${rowg}[${colm}]. Error de ${tipe}`, desc, obj)
 }
+
+//* -------------- To use --------------
 
 function params(): void {}
 function statutes(): void {}
 function constvars(): void {}
 
-function block(): void {
-  let lex: string = ''
-  let tok: string = ''
+//* -------------- To use --------------
 
+function block(): void {
   if (lex !== 'inicio') {
     error('Error de Sintaxis', 'se esperaba <inicio> y llego', lex)
   }
@@ -223,10 +241,6 @@ function block(): void {
 }
 
 function funcParcial(): void {
-  let lex: string
-  let tok: string
-  let idf: string = ''
-
   if (idf === 'principal') {
     NOPRINC = false
   }
@@ -249,10 +263,6 @@ function funcParcial(): void {
 }
 
 function prgm(): void {
-  let lex: string
-  let tok: string
-  let idf: string
-  
   [tok, lex] = scanner()
 
   while (
@@ -261,7 +271,8 @@ function prgm(): void {
     lex === 'decimal' ||
     lex === 'palabra' ||
     lex === 'logico' ||
-    (lex === 'sintipo' && idx < entrance.length)
+    lex === 'sintipo' ||
+    lex === 'principal' && NOPRINC
   ) {
     if (lex === 'constante') {
       constvars()
@@ -280,7 +291,12 @@ function prgm(): void {
         )
       } else {
         [tok, lex] = scanner()
-        idf = lex,
+
+        if (tok === 'Ide') idf = lex
+        else {
+          error('Sintaxis', 'Se esperaba <Ide> y llegó ', tok)
+        }
+
         [tok, lex] = scanner()
 
         if (lex === '(') {
@@ -295,59 +311,120 @@ function prgm(): void {
 
 //* -------------- Main Zone --------------
 
-async function main(): Promise<void> {
-  let line
-  let tok: string
-  let lex: string
+console.log(archE.slice(-4));
 
-  // Get the file to compile
-  const archE = await input("File to compile (*.icc) [. = Exit]: ");
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
-  // Exit if the user enters "."
-  if (archE === ".") {
-    process.exit(0);
+(async () => {
+  while (archE.slice(-4) !== '.icc') {
+    archE = await getInput('File to compile (*.icc) [. = Exit]: ');
+
+    if (archE === '.') {
+      exit(0);
+    }
+
+    try {
+      const inputF = fs.readFileSync(archE, 'utf8');
+      compile(inputF);
+    } catch (error) {
+      console.log(`No existe el archivo: ${archE}`);
+    }
   }
+})();
 
-  // Check if the file exists
-  if (!fs.existsSync(archE)) {
-    console.log("No existe el archivo: ", archE);
-    return;
-  }
+function compile(entrance: string): void {
+  let tok: string = '';
+  let lex: string = '';
+  let idx: number = 0;
 
-  // Read the file contents
-  const inputF = readFileSync(archE, "r+");
-
-  // Iterate over the lines of the file and add them to the entrance string
-  while ((line = inputF.readline()) !== null) {
-    entrance += line;
-  }
-
-  // Close the file
-  inputF.close();
-
-  // Print the entrance string
-  console.log("\n\n" + entrance, "\n\n");
-
-  // Scan the entrance string for tokens and lexemes
   while (idx < entrance.length) {
-    tok = lex = "";
     [tok, lex] = scanner();
     console.log(tok, lex);
   }
 
-  // Call the prgm() function to compile the program
   prgm();
 
-  // Check if the principal function was not declared
   if (NOPRINC) {
-    error("Error de Semantica", "NO declaro la funcion <principal>", "");
+    error('Error de Semántica', 'NO declaró la función <principal>', '');
   }
 
-  // If there were no errors, print a success message
   if (!ERRA) {
-    console.log("Compilado con exito");
+    console.log('Compilado con éxito');
   }
 }
 
-// Start the main function
-main();
+function getInput(prompt: string): Promise<string> {
+  return new Promise<string>((resolve) => {
+    rl.question(prompt, (answer) => {
+      resolve(answer);
+    });
+  });
+}
+
+function exit(exitCode: number): void {
+  process.exit(exitCode);
+}
+
+// console.log(archE.slice(-3));
+
+// const rl = readline.createInterface({
+//   input: process.stdin,
+//   output: process.stdout,
+// });
+
+// (async () => {
+//   while (archE.slice(-3) !== '.icc') {
+//     archE = await getInput('File to compile (*.icc) [. = Exit]: ');
+
+//     if (archE === '.') {
+//       process.exit(0);
+//     }
+
+//     try {
+//       inputF = fs.readFileSync(archE, 'utf8');
+//       break; // Exit the loop after successfully reading the file
+//     } catch (error) {
+//       console.log(`No existe el archivo: ${archE}`);
+//     }
+//   }
+
+//   if (inputF !== null) {
+//     let entrance: string = inputF;
+
+//     console.log('\n\n' + entrance, '\n\n');
+
+//     let tok: string = '';
+//     let lex: string = '';
+//     let idx: number = 0;
+
+//     while (idx < entrance.length) {
+//       [tok, lex] = scanner();
+//       console.log(tok, lex);
+//     }
+
+//     prgm();
+
+//     if (NOPRINC) {
+//       error('Error de Semantica', 'NO declaro la funcion <principal>', '');
+//     }
+
+//     if (!ERRA) {
+//       console.log('Compilado con éxito');
+//     }
+//   }
+// })();
+
+// function getInput(prompt: string): Promise<string> {
+//   return new Promise<string>((resolve) => {
+//     rl.question(prompt, (answer) => {
+//       resolve(answer);
+//     });
+//   });
+// }
+
+// function exit(exitCode: number): void {
+//   process.exit(exitCode);
+// }
