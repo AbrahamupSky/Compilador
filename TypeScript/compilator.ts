@@ -311,112 +311,72 @@ function prgm(): void {
 //* -------------- Main Zone --------------
 
 const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+function main() {
+  console.log(archE.slice(-3))
+
+  const readline = require('readline')
+  const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout,
-  });
+    output: process.stdout
+  })
 
-async function compile(entrance: string): Promise<void> {
-  let tok: string = '';
-  let lex: string = '';
-  let idx: number = 0;
-  let lineIdx: number = 0;
-
-  while (idx < entrance.length) {
-    [tok, lex] = scanner();
-    console.log(tok, lex);
-
-    // Manejar los saltos de línea
-    if (entrance[idx] === '\n') {
-      lineIdx++;
-      colm = 1; // Reiniciar el contador de columnas
-    } else {
-      colm++; // Incrementar el contador de columnas
+  rl.question('File to compile (*.icc) [. = Exit]: ', (filename: string) => {
+    if (filename === '.') {
+      process.exit(0)
     }
 
-    idx++;
-  }
+    try {
+      const inputF = fs.openSync(filename, 'r')
+      const stats = fs.fstatSync(inputF)
+      const fileSize = stats.size
+      const buffer = Buffer.alloc(fileSize)
+      fs.readSync(inputF, buffer, 0, fileSize, 0)
+      entrance = buffer.toString()
+      fs.closeSync(inputF)
+    } catch (error) {
+      console.log(`No existe el archivo ${filename}`)
+      rl.close()
+      return
+    }
 
-  prgm();
+    console.log(`\n\n ${entrance} \n\n`)
 
-  if (NOPRINC) {
-    error('Error de Semántica', 'NO declaró la función <principal>', '');
-  }
+    let tok: string, lex: string
+    while (idx < entrance.length) {
+      [tok, lex] = scanner()
+      console.log(tok, lex)
+    }
 
-  if (!ERRA) {
-    console.log('Compilado con éxito');
-  }
-
-  function getInput(prompt: string): Promise<string> {
-    return new Promise<string>((resolve) => {
-      rl.question(prompt, (answer) => {
-        resolve(answer);
-      });
-    });
-  }
-  
-
-  // Actualizar archE para que el bucle principal funcione correctamente
-  archE = await getInput('File to compile (*.icc) [. = Exit]: ');
-
-  if (archE === '.') {
-    process.exit(0);
-  }
-
-  try {
-    const inputF = fs.readFileSync(archE, 'utf8');
-    compile(inputF);
-  } catch (error) {
-    console.log(`No existe el archivo: ${archE}`);
-  }
+    process.exit(0)
+  })
 }
 
-
-
-//! This already works, but enters in an infinite loop
-// console.log(archE.slice(-4));
+main();
 
 // const rl = readline.createInterface({
 //   input: process.stdin,
 //   output: process.stdout,
 // });
 
-// (async () => {
-//   while (archE.slice(-4) !== '.icc') {
-//     archE = await getInput('File to compile (*.icc) [. = Exit]: ');
+// const compile = (inputF: string): void => {
+//   entrance = inputF;
+//   idx = 0;
+//   ERRA = false;
+//   rowg = 1;
+//   colm = 1;
+//   lex = '';
+//   tok = '';
+//   idf = '';
 
-//     if (archE === '.') {
-//       exit(0);
-//     }
+//   // Reset other necessary variables and data structures.
 
-//     try {
-//       const inputF = fs.readFileSync(archE, 'utf8');
-//       compile(inputF);
-//     } catch (error) {
-//       console.log(`No existe el archivo: ${archE}`);
-//     }
-//   }
-// })();
-
-// function compile(entrance: string): void {
-//   let tok: string = '';
-//   let lex: string = '';
-//   let idx: number = 0;
-
-//   while (idx < entrance.length) {
-//     [tok, lex] = scanner();
-//     console.log(tok, lex);
-//   }
-
+//   // Start parsing.
 //   prgm();
-
-//   if (NOPRINC) {
-//     error('Error de Semántica', 'NO declaró la función <principal>', '');
-//   }
-
-//   if (!ERRA) {
-//     console.log('Compilado con éxito');
-//   }
-// }
+// };
 
 // function getInput(prompt: string): Promise<string> {
 //   return new Promise<string>((resolve) => {
@@ -426,6 +386,24 @@ async function compile(entrance: string): Promise<void> {
 //   });
 // }
 
-// function exit(exitCode: number): void {
-//   process.exit(exitCode);
-// }
+// (async () => {
+  
+//   while (archE.slice(-4) !== '.icc' && archE !== '.') {
+//     archE = await getInput('File to compile (*.icc) [. = Exit]: ');
+
+//     if (archE === '.') {
+//       process.exit(0);
+//     }
+
+//     try {
+//       const inputF = fs.readFileSync(archE, 'utf8');
+//       compile(inputF);
+//     } catch (error) {
+//       if (error.code === 'ENOENT') {
+//         console.log(`No existe el archivo: ${archE}`);
+//       } else {
+//         throw error;
+//       }
+//     }    
+//   }
+// })();

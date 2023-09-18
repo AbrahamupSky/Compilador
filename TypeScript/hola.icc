@@ -1,0 +1,5 @@
+palabra saludo := "hola mundo"
+sintipo principal()
+inicio
+  imprimenl("Hola mundo, Bienvenidos a Compiladores");
+fin;
