@@ -10,9 +10,9 @@ let colm: number = 1;
 let NOPRINC: boolean = true;
 let archE: string = '';
 let inputF: any = null;
-let lex: string = ''; // Added declaration
-let tok: string = ''; // Added declaration
-let idf: string = ''; // Added declaration
+let lex: string = '';
+let tok: string = '';
+let idf: string = '';
 
 const ERR: number = -1;
 const ACP: number = 99;
@@ -39,7 +39,9 @@ const keywords: string[] = [
   "imprimenl",
   "lee",
   "interrumpe",
-  "continua"
+  "continua",
+  "mientras",
+  "que"
 ];
 const OPL: string[] = ["no", "y", "o"];
 const CTL: string[] = ["verdadero", "falso"];
@@ -112,7 +114,7 @@ export function scanner(): [string, string] {
   let statusA: number = 0
   let col: number = -1
 
-  while (idx < entrance.length && status !== ERR && status !== ACP) {
+  while (idx < entrance.length && status !== ERR && status === ACP) {
     while (status === 7 && entrance[idx] !== '\n') {
       idx += 1
       colm += 1
@@ -191,7 +193,9 @@ export function scanner(): [string, string] {
   }
   else if (statusA === 2) {token = 'Ent'}
   else if (statusA === 4) {token = 'Dec'}
-  else if (statusA in [5, 6, 10]) {token = 'OpA'}
+  else if (statusA in [5, 6, 10]) {
+    token = 'OpA'
+  }
   else if (statusA === 11 || statusA === 12) {token = 'Del'}
   else if (statusA === 13) {token = 'OpS'}
   else if (statusA === 19) {token = 'CtA'}
@@ -344,9 +348,11 @@ function main() {
     console.log(`\n\n${entrance}\n\n`);
 
     let tok: string, lex: string;
+
     while (idx < entrance.length) {
       [tok, lex] = scanner();
       console.log(tok, lex);
+      if (tok === 'OpA') break
     }
 
     exit();
