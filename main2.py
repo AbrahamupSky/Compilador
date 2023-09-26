@@ -17,51 +17,41 @@ CTL = ['verdadero', 'falso']
 delim = ['.', ',', ';', '(', ')', '[', ']']
 special = ['!', '$', '@', '#', '?']
 
-#* col 0 = 'letra'
-#* col 1 = '_'
-#* col 2 = 'Digito'
-#* col 3 = 'OPAS'
-#* col 4 = '/'
-#* col 5 = '.'
-#* col 6 = '*'
-#* col 7 = 'Del'
-#* col 8 = ':'
-#* col 9 = '='
-#* col 10 = '<'
-#* col 11 = '>'
-#* col 12 = "
-#* col 13 = special
-#* col 14 = '\n'
+  #* col 0 = 'letra'
+  #* col 1 = '_'
+  #* col 2 = 'Digito'
+  #* col 3 = 'OPAS'
+  #* col 4 = '/'
+  #* col 5 = '.'
+  #* col 6 = '*'
+  #* col 7 = 'Del'
+  #* col 8 = ':'
+  #* col 9 = '='
+  #* col 10 = '<'
+  #* col 11 = "
+  #* col 12 = special
 
 matrans = [
-#!   0    1    2    3    4    5    6    7    8    9    10   11   12   13   14
-  [  1 ,  1 ,  2 ,  5 ,  6 ,  11,  10,  11,  12,  14,  15,  18,  18, ERR,  0  ], #0
-  [  1 ,  1 ,  1 , ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #1
-  [ ACP, ACP,  2 , ACP, ACP,  3 , ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #2
-  [ ERR, ERR,  4 , ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR ], #3
-  [ ACP, ACP,  4 , ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #4
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #5
-  [ ACP, ACP, ACP, ACP,  7 , ACP,  8 , ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #6
-  [  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7, ], #7
-  [  8 ,  8 ,  8 ,  8 ,  8 ,  8 ,  9 ,  8 ,  8 ,  8 ,  8 ,  8 ,  8 ,  8 ,  8, ], #8
-  [  8 ,  8 ,  8 ,  9 ,  0 ,  8 ,  9 ,  8 ,  8 ,  8 ,  8 ,  8 ,  8 ,  8 ,  8, ], #9
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #10
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #11
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP,  13, ACP, ACP, ACP, ACP, ACP ], #12
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #13
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #14
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP,  16, ACP, ACP, ACP, ACP, ACP ], #15
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #16
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #17
-  [  18,  18,  18,  18,  18,  18,  18,  18,  18,  18,  18,  19,  18,  18,  18 ], #18
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #19
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP,  21, ACP,  22, ACP, ACP, ACP ], #20
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP,  21,  21, ACP, ACP, ACP, ACP ], #21
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP,  22,  22, ACP, ACP, ACP ], #22
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP,  24, ACP,  23, ACP, ACP, ACP ], #23
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP,  24, ACP,  24, ACP, ACP, ACP ], #24
-  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP,  25, ACP,  26, ACP, ACP, ACP, ACP, ACP ], #25
-  [  26,  26,  26,  26,  26,  26,  26,  26,  26,  26,  26,  26,  26,  26,  26 ], #26
+  [  1 ,  1 ,  2 ,  5 ,  6 ,  11,  10,  11,  12,  14,  15,  18, ERR ], #0
+  [  1 ,  1 ,  1 , ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #1
+  [ ACP, ACP,  2 , ACP, ACP,  3 , ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #2
+  [ ERR, ERR,  4 , ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR ], #3
+  [ ACP, ACP,  4 , ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #4
+  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #5
+  [ ACP, ACP, ACP, ACP,  7 , ACP,  8 , ACP, ACP, ACP, ACP, ACP, ACP ], #6
+  [  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7 ,  7  ], #7
+  [  8 ,  8 ,  8 ,  8 ,  8 ,  8 ,  9 ,  8 ,  8 ,  8 ,  8 ,  8 ,  8  ], #8
+  [  8 ,  8 ,  8 ,  9 ,  0 ,  8 ,  9 ,  8 ,  8 ,  8 ,  8 ,  8 ,  8  ], #9
+  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #10
+  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #11
+  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP,  13, ACP, ACP, ACP ], #12
+  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #13
+  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #14
+  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP,  16, ACP, ACP, ACP ], #15
+  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #16
+  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #17
+  [  18,  18,  18,  18,  18,  18,  18,  18,  18,  18,  18,  19,  18 ], #18
+  [ ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP, ACP ], #19
 ]
 
 def colCar(x):
@@ -76,10 +66,8 @@ def colCar(x):
   if x == ':'   : return 8
   if x == '='   : return 9
   if x in '<'   : return 10
-  if x in '>'   : return 11
-  if x in '"'   : return 12
-  if x in special: return 13
-  if x in '\n'   : return 14
+  if x in '"'   : return 11
+  if x in special: return 12
 
   if not(x in delu):
     print(x, 'is not a char or illegal symbol')
@@ -132,7 +120,7 @@ def scanner():
       statusA = status
       status = ACP
 
-    if col >= 0 and col <= 12 and col <= 13 and status != ACP and status != ERR:
+    if col >= 0 and col <= 12 and status != ACP and status != ERR:
       statusA = status
 
       if c in delu and status != 18: status = ACP
@@ -157,9 +145,9 @@ def scanner():
 
   elif statusA == 2: token = 'Ent'
   elif statusA == 4: token = 'Dec'
-  elif statusA in [5, 6, 10, 11]: token = 'OpA'
-  elif statusA == 12 or statusA == 13: token = 'Del'
-  elif statusA == 15: token = 'OpS'
+  elif statusA in [5, 6, 10]: token = 'OpA'
+  elif statusA == 11 or statusA == 12: token = 'Del'
+  elif statusA == 13: token = 'OpS'
   elif statusA == 19: token = 'CtA'
   return token, lexema
 
