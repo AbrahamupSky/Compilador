@@ -1,6 +1,4 @@
-palabra saludo := "hola mundo"
 sintipo principal()
 inicio
-  +<
-  imprimenl("Hola mundo, Bienvenidos a Compiladores");
+  imprimenl("Hola Mundo, bienvenidos a Compiladores!!")
 fin;

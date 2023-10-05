@@ -1,0 +1,14 @@
+sintipo principal()
+inicio
+  si x < 6.7 hacer
+  inicio
+    si x < 23.56 hacer
+    inicio
+      imprime("x=",x)
+    fin;
+  fin
+  sino
+  inicio
+    imprimenl("Entro a sino")
+  fin;
+fin

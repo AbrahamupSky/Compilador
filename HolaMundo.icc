@@ -1,0 +1,4 @@
+sintipo principal()
+inicio
+    imprimenl("Hola Mundo, bienvenidos a Compiladores!!");
+fin;
