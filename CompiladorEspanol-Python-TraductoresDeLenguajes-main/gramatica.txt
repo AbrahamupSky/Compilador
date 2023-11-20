@@ -1,0 +1,96 @@
+programa: { sentencia }
+sentencia: definicion_constante 
+         | definicion_variable 
+         | asignacion_variable
+         | declaracion_funcion 
+         | llamada_funcion 
+         | sentencia_control 
+         | "imprime" "(" expresion { "," expresion } ")" ";"
+         | "imprimenl" "(" expresion { "," expresion } ")" ";"
+         | "lee" "(" VARIABLE ")" ";"
+definicion_constante: "constante" tipo VARIABLE "=" expresion ";"
+definicion_variable: tipo lista_variables ";"
+lista_variables: VARIABLE { "," VARIABLE } [ "=" expresion ] [ "[" expresion "]" ] [ "=" "{" lista_valores "}" ]
+lista_valores: expresion { "," expresion }
+asignacion_variable: VARIABLE "=" expresion ";"
+declaracion_funcion: tipo VARIABLE "(" [ parametros_funcion ] ")" "{" { sentencia } "}"
+parametros_funcion: tipo VARIABLE { "," tipo VARIABLE }
+llamada_funcion: VARIABLE "(" [ argumentos_funcion ] ")" ";"
+argumentos_funcion: expresion { "," expresion }
+sentencia_control: "si" "(" expresion ")" "hacer" "{" { sentencia } "}" [ "sino" "{" { sentencia } "}" ]
+                 | "desde" VARIABLE "=" expresion "hasta" expresion "incr" expresion "{" { sentencia } "}"
+                 | "mientras" "que" expresion "{" { sentencia } "}"
+                 | "repite" "{" { sentencia } "}" "hasta" "que" expresion
+                 | "regresa" expresion ";"
+tipo: "nulo" | "entero" | "decimal" | "palabra" | "logico"
+expresion: TERMINO { ("+" | "-" | "*" | "/" | "%" | "^") TERMINO }
+         | VARIABLE 
+         | ENTERO
+         | DECIMAL
+         | CADENA
+         | "verdadero"
+         | "falso"
+         | VARIABLE "(" [ argumentos_funcion ] ")"
+TERMINO: "(" expresion ")"
+       | VARIABLE
+       | ENTERO
+       | DECIMAL
+       | CADENA
+       | "verdadero"
+       | "falso"
+
+
+
+programa ::= {declaracion} funcion funcion_principal
+
+declaracion ::= (calificador_constante)? declaracion_variable | declaracion_funcion
+
+calificador_constante ::= 'constante'
+
+declaracion_variable ::= tipo identificador {',' identificador} ('=' expresion)? ';'
+
+tipo ::= 'nulo' | 'entero' | 'decimal' | 'palabra' | 'logico'
+
+identificador ::= char {char | digit}
+
+expresion ::= numero | cadena | logico | identificador | operacion_aritmetica | operacion_logica | operacion_relacional
+
+numero ::= digit {digit} | digit {digit} '.' digit {digit}
+
+cadena ::= '"' {char} '"'
+
+logico ::= 'verdadero' | 'falso'
+
+operacion_aritmetica ::= expresion operador_aritmetico expresion
+
+operador_aritmetico ::= '+' | '-' | '*' | '/' | '%' | '^'
+
+operacion_logica ::= expresion operador_logico expresion
+
+operador_logico ::= 'no' | 'y' | 'o'
+
+operacion_relacional ::= expresion operador_relacional expresion
+
+operador_relacional ::= '<' | '>' | '<=' | '>=' | '<>' | '=='
+
+declaracion_funcion ::= tipo identificador '(' lista_parametros ')' sentencia_compuesta
+
+lista_parametros ::= [tipo identificador {',' tipo identificador}]
+
+sentencia_compuesta ::= '{' sentencia {sentencia} '}'
+
+sentencia ::= sentencia_expresion | sentencia_seleccion | sentencia_iteracion | sentencia_imprimir | sentencia_retorno | sentencia_asignacion
+
+sentencia_expresion ::= expresion ';'
+
+sentencia_seleccion ::= 'si' '(' expresion ')' 'hacer' sentencia_compuesta ('sino' sentencia_compuesta)?
+
+sentencia_iteracion ::= ('desde' expresion 'hasta' expresion 'incr' expresion | 'mientras que' expresion | 'repite' {sentencia} 'hasta que' expresion) sentencia_compuesta
+
+sentencia_imprimir ::= ('imprime' | 'imprimenl') '(' expresion ')' ';'
+
+sentencia_retorno ::= 'regresa' expresion ';'
+
+sentencia_asignacion ::= identificador '=' expresion ';'
+
+funcion_principal ::= 'nulo principal() ' sentencia_compuesta

@@ -1,0 +1,3 @@
+inicio
+    imprime("Hola Mundo, bienvenidos a Compiladores!!");
+fin;

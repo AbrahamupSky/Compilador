@@ -17,6 +17,11 @@ CTL = ['verdadero', 'falso']
 delim = ['.', ',', ';', '(', ')', '[', ']']
 special = ['!', '$', '@', '#', '?']
 bImp = False
+pilaTipos = []
+tipos = ['sintipo', 'entero', 'decimal', 'logico', 'palabra']
+tabSim = {'':[], 'x':['V','E','0',''], 'w':['V','E','0','20'],
+      'MAX':['C','E','0','30'], 'vector':['V','E','30','']
+}
 
 matrans= [
 #*  0     1    2     3      4    5     6     7     8     9     10    11    12   13     14   
@@ -67,6 +72,28 @@ def colCar(x):
   if not(x in delu):
     print(x, 'is not a char or illegal symbol')
     return ERR
+
+def insTabsim(nomb, valores):
+  tabSim[nomb] = valores;
+
+def getTabsim(nomb):
+  return tabSim[nomb];
+
+tabTipos = {'P:=P':'','E:=E':'','D:=E':'','D:=D':'', 'L:=L':'',
+      'E+E':'E', 'D+E':'D','E+D':'D','P+P':'P',
+      'E-E':'E', 'D-E':'D','E-D':'D',
+      'E*E':'E', 'D*E':'D','E*D':'D',
+      'E/E':'D', 'D/E':'D','E/D':'D','E'+"%"+'E':'E',
+      'E^E':'D', 'D^E':'D','E^D':'D',
+      '-E':'E', '-D':'D',
+      'E<E':'L', 'D<E':'L','E<D':'','P<P':'L',
+      'E>E':'L', 'D>E':'L','E>D':'','P>P':'L',
+      'E<=E':'L', 'D<=E':'L','E<=D':'','P<=P':'L',
+      'E>=E':'L', 'D>=E':'L','E>=D':'','P>=P':'L',
+      'E<>E':'L', 'D<>E':'L','E<>D':'','P<>P':'L',
+      'E=E':'L', 'D=E':'L','E=D':'','P=P':'L',
+      'noL':'L', 'LyL':'L','LoL':'L'
+}
 
 
 def scanner():
@@ -351,37 +378,33 @@ def prgm():
 #* Main Zone
 if __name__ == '__main__':
   archE = ''
-
   print(archE[len(archE)-3:])
-
-  while (archE[len(archE)-3:] != '.icc'):
-    archE = input('File to compile (*.icc) [. = Exit]: ') # icc = Ingeniero en Ciencias Computacionales
-
+  while (archE[len(archE)-3:] != 'icc'):
+    archE = input('Archivo a compilar (*.icc) [.]=Salir: ')
     if archE == '.': exit(0)
-
+    aEnt = None
     try:
-      inputF = open(archE, 'r+')
+      aEnt = open(archE, 'r+')
       break
-
     except FileNotFoundError:
-      print('No existe el archivo: ', archE)
+      print(archE, 'No exite volver a intentar')
+  
+  if aEnt != None:
+    while (linea := aEnt.readline()):
+      entrance += linea
+    aEnt.close()
 
-  if inputF != None:
-    while line := inputF.readline():
-      entrance += line
-    inputF.close()
+  print('\n\n' + entrance + '\n\n')
+  '''
+  tok = lex = ''
+  while (idx < len(entrada)):
+    tok, lex = scanner()
+    print(tok, lex)
+    #if lex == ';': break
 
-  print('\n\n' + entrance, '\n\n')
-
-  # tok = lex = ''
-  # while (idx < len(entrance)):
-  #   tok, lex = scanner()
-  #   print(tok, lex)
-
-  # exit(0)
-  prgm()
-  if NOPRINC:
-    error('Error de Semantica', 'NO declaro la funcion <principal>', '')
-
+  exit(0) '''
+  prgm();
+  if NOPRINC: 
+    error('Semantica', 'NO declaro la funcion <principal>', '')
   if ERRA == False:
-    print('Compilado con exito')
+    print(archE, "Compilo con exito!!!") 
