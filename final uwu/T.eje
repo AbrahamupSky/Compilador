@@ -1,0 +1,88 @@
+x,V,E,,,#,
+w,V,E,,20,#,
+MAX,C,E,0,30,#,
+N,C,E,0,20,#,
+vector,V,E,1,['0'],#,
+r,V,D,0,,#,
+s,V,D,0,4.55,#,
+SALUDO,C,P,0,"Hola",#,
+entrada,V,P,0,"",#,
+nombre,V,P,0,,#,
+PI,C,D,0,3.141592,#,
+bandera,V,L,0,,#,
+flag,V,L,0,falso,#,
+VERDAD,C,L,0,verdadero,#,
+FacRec,F,E,0,,#,
+n$FacRec$E,P,E,0,,#,
+SumaImpar,F,E,0,,#,
+m$SumaImpar$E,P,E,0,,#,
+suma$SumaImpar$E,V,E,0,0,#,
+i$SumaImpar$E,V,E,0,1,#,
+OrdVec,F,S,0,,#,
+num$OrdVec$S,V,E,0,,#,
+tmp$OrdVec$S,V,E,0,,#,
+i$OrdVec$S,V,E,0,,#,
+j$OrdVec$S,V,E,0,,#,
+_P,F,S,0,,#,
+m$_P,V,E,0,,#,
+@
+1 OPR 0, 14
+2 LIT 0, 0
+3 OPR 0, 15
+4 OPR 0, 14
+5 LIT 1, 0
+6 OPR 0, 4
+7 OPR 0, 3
+8 LIT 1, 0
+9 LIT 1, 0
+10 LIT 2, 0
+11 OPR 0, 2
+12 LIT "Dame elementos del Vector: ", 0
+13 OPR 0, 20
+14 LIT 1, 0
+15 LIT "Vector[", 0
+16 OPR 0, 20
+17 OPR 0, 20
+18 LIT "]:=", 0
+19 OPR 0, 20
+20 LIT 1, 0
+21 OPR 0, 3
+22 LIT 1, 0
+23 OPR 0, 2
+24 LIT 1, 0
+25 OPR 0, 10
+26 LIT "*** El vector Ordenado Ascendente ***", 0
+27 OPR 0, 21
+28 LIT 1, 0
+29 LIT "Vector[", 0
+30 OPR 0, 20
+31 OPR 0, 20
+32 LIT "]:=", 0
+33 OPR 0, 20
+34 OPR 0, 21
+35 LIT "Dame numero para obtener Factorial: ", 0
+36 OPR 0, 20
+37 LIT "Factorial Recursivo de ", 0
+38 OPR 0, 20
+39 OPR 0, 20
+40 LIT " es= ", 0
+41 OPR 0, 20
+42 OPR 0, 21
+43 LIT "Limite para sumar Impares: ", 0
+44 OPR 0, 20
+45 LIT "Suma de impares hasta ", 0
+46 OPR 0, 20
+47 OPR 0, 20
+48 LIT " es= ", 0
+49 OPR 0, 20
+50 OPR 0, 21
+51 LIT "Como te llamas?: ", 0
+52 OPR 0, 20
+53 LIT "Hola ", 0
+54 OPR 0, 20
+55 OPR 0, 20
+56 LIT " YA Aprobaste!!!!", 0
+57 OPR 0, 21
+58 LIT "Hasta Pronto...", 0
+59 OPR 0, 21
+60 OPR 0, 0
